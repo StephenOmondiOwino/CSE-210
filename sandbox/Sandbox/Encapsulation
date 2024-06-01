@@ -1,0 +1,174 @@
+using System;
+using System.Collections.Generic;
+
+// Address Class
+public class Address
+{
+    private string street;
+    private string city;
+    private string stateOrProvince;
+    private string country;
+
+    public Address(string street, string city, string stateOrProvince, string country)
+    {
+        this.street = street;
+        this.city = city;
+        this.stateOrProvince = stateOrProvince;
+        this.country = country;
+    }
+
+    public bool IsInUSA()
+    {
+        return country.ToLower() == "usa";
+    }
+
+    public string GetFullAddress()
+    {
+        return $"{street}\n{city}, {stateOrProvince}\n{country}";
+    }
+}
+
+// Customer Class
+public class Customer
+{
+    private string name;
+    private Address address;
+
+    public Customer(string name, Address address)
+    {
+        this.name = name;
+        this.address = address;
+    }
+
+    public bool LivesInUSA()
+    {
+        return address.IsInUSA();
+    }
+
+    public string GetName()
+    {
+        return name;
+    }
+
+    public string GetAddress()
+    {
+        return address.GetFullAddress();
+    }
+}
+
+// Product Class
+public class Product
+{
+    private string name;
+    private string productId;
+    private double price;
+    private int quantity;
+
+    public Product(string name, string productId, double price, int quantity)
+    {
+        this.name = name;
+        this.productId = productId;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    public double GetTotalCost()
+    {
+        return price * quantity;
+    }
+
+    public string GetName()
+    {
+        return name;
+    }
+
+    public string GetProductId()
+    {
+        return productId;
+    }
+}
+
+// Order Class
+public class Order
+{
+    private List<Product> products;
+    private Customer customer;
+    private const double USA_SHIPPING_COST = 5.0;
+    private const double INTERNATIONAL_SHIPPING_COST = 35.0;
+
+    public Order(Customer customer)
+    {
+        this.customer = customer;
+        this.products = new List<Product>();
+    }
+
+    public void AddProduct(Product product)
+    {
+        products.Add(product);
+    }
+
+    public double GetTotalCost()
+    {
+        double totalCost = 0;
+        foreach (var product in products)
+        {
+            totalCost += product.GetTotalCost();
+        }
+        totalCost += customer.LivesInUSA() ? USA_SHIPPING_COST : INTERNATIONAL_SHIPPING_COST;
+        return totalCost;
+    }
+
+    public string GetPackingLabel()
+    {
+        string label = "Packing Label:\n";
+        foreach (var product in products)
+        {
+            label += $"{product.GetName()} (ID: {product.GetProductId()})\n";
+        }
+        return label;
+    }
+
+    public string GetShippingLabel()
+    {
+        return $"Shipping Label:\n{customer.GetName()}\n{customer.GetAddress()}";
+    }
+}
+
+// Main Program
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        // Create Addresses
+        Address address1 = new Address("123 Maple St", "Springfield", "IL", "USA");
+        Address address2 = new Address("456 Elm St", "Toronto", "ON", "Canada");
+
+        // Create Customers
+        Customer customer1 = new Customer("John Doe", address1);
+        Customer customer2 = new Customer("Jane Smith", address2);
+
+        // Create Products
+        Product product1 = new Product("Laptop", "A123", 999.99, 1);
+        Product product2 = new Product("Mouse", "B456", 25.99, 2);
+        Product product3 = new Product("Keyboard", "C789", 49.99, 1);
+        Product product4 = new Product("Monitor", "D012", 199.99, 1);
+
+        // Create Orders
+        Order order1 = new Order(customer1);
+        order1.AddProduct(product1);
+        order1.AddProduct(product2);
+
+        Order order2 = new Order(customer2);
+        order2.AddProduct(product3);
+        order2.AddProduct(product4);
+
+        // Display order details
+        Console.WriteLine(order1.GetPackingLabel());
+        Console.WriteLine(order1.GetShippingLabel());
+        Console.WriteLine($"Total Cost: ${order1.GetTotalCost():F2}\n");
+
+        Console.WriteLine(order2.GetPackingLabel());
+        Console.WriteLine(order2.GetShippingLabel());
+        Console.WriteLine($"Total Cost: ${order2.GetTotalCost():F2}\n");
+    }
+}
