@@ -1,0 +1,136 @@
+using System;
+
+// Base Address Class
+public class Address
+{
+    private string street;
+    private string city;
+    private string state;
+    private string zipCode;
+
+    public Address(string street, string city, string state, string zipCode)
+    {
+        this.street = street;
+        this.city = city;
+        this.state = state;
+        this.zipCode = zipCode;
+    }
+
+    public override string ToString()
+    {
+        return $"{street}, {city}, {state}, {zipCode}";
+    }
+}
+
+// Base Event Class
+public abstract class Event
+{
+    private string title;
+    private string description;
+    private string date;
+    private string time;
+    private Address address;
+
+    protected Event(string title, string description, string date, string time, Address address)
+    {
+        this.title = title;
+        this.description = description;
+        this.date = date;
+        this.time = time;
+        this.address = address;
+    }
+
+    public virtual string StandardDetails()
+    {
+        return $"Event Title: {title}\nDescription: {description}\nDate: {date}\nTime: {time}\nAddress: {address}";
+    }
+
+    public abstract string FullDetails();
+    
+    public string ShortDescription()
+    {
+        return $"Type: {GetType().Name}\nTitle: {title}\nDate: {date}";
+    }
+}
+
+// Derived Lecture Class
+public class Lecture : Event
+{
+    private string speaker;
+    private int capacity;
+
+    public Lecture(string title, string description, string date, string time, Address address, string speaker, int capacity)
+        : base(title, description, date, time, address)
+    {
+        this.speaker = speaker;
+        this.capacity = capacity;
+    }
+
+    public override string FullDetails()
+    {
+        return $"{StandardDetails()}\nType: Lecture\nSpeaker: {speaker}\nCapacity: {capacity}";
+    }
+}
+
+// Derived Reception Class
+public class Reception : Event
+{
+    private string rsvpEmail;
+
+    public Reception(string title, string description, string date, string time, Address address, string rsvpEmail)
+        : base(title, description, date, time, address)
+    {
+        this.rsvpEmail = rsvpEmail;
+    }
+
+    public override string FullDetails()
+    {
+        return $"{StandardDetails()}\nType: Reception\nRSVP Email: {rsvpEmail}";
+    }
+}
+
+// Derived Outdoor Gathering Class
+public class OutdoorGathering : Event
+{
+    private string weather;
+
+    public OutdoorGathering(string title, string description, string date, string time, Address address, string weather)
+        : base(title, description, date, time, address)
+    {
+        this.weather = weather;
+    }
+
+    public override string FullDetails()
+    {
+        return $"{StandardDetails()}\nType: Outdoor Gathering\nWeather: {weather}";
+    }
+}
+
+// Main Program
+public class Program
+{
+    public static void Main()
+    {
+        Address lectureAddress = new Address("123 Main St", "Springfield", "IL", "62701");
+        Lecture lecture = new Lecture("The Future of AI", "A talk on the future advancements in AI", "06/15/2024", "10:00 AM", lectureAddress, "Dr. John Doe", 100);
+
+        Address receptionAddress = new Address("456 Elm St", "Springfield", "IL", "62701");
+        Reception reception = new Reception("Company Annual Meetup", "An event to meet and greet company members", "06/20/2024", "06:00 PM", receptionAddress, "rsvp@company.com");
+
+        Address outdoorAddress = new Address("789 Oak St", "Springfield", "IL", "62701");
+        OutdoorGathering outdoorGathering = new OutdoorGathering("Summer Festival", "A festival to celebrate summer", "07/04/2024", "02:00 PM", outdoorAddress, "Sunny");
+
+        Event[] events = { lecture, reception, outdoorGathering };
+
+        foreach (var ev in events)
+        {
+            Console.WriteLine(ev.StandardDetails());
+            Console.WriteLine();
+            Console.WriteLine(ev.FullDetails());
+            Console.WriteLine();
+            Console.WriteLine(ev.ShortDescription());
+            Console.WriteLine();
+            Console.WriteLine(new string('-', 50));
+        }
+    }
+}
